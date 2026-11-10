@@ -1,0 +1,22 @@
+// Run a job once from the command line, e.g. `npm run job:report`.
+import { runSessionCleanup } from "./cleanupSessions.js";
+import { runRegistrationReport } from "./registrationReport.js";
+
+const JOBS = {
+  "registration-report": runRegistrationReport,
+  "cleanup-sessions": runSessionCleanup,
+};
+
+const name = process.argv[2];
+const job = JOBS[name];
+if (!job) {
+  console.error(`Usage: node src/jobs/run.js <${Object.keys(JOBS).join(" | ")}>`);
+  process.exit(1);
+}
+
+try {
+  console.log(JSON.stringify(await job(), null, 2));
+} catch (err) {
+  console.error(`Job "${name}" failed:`, err.message);
+  process.exitCode = 1;
+}

@@ -1,0 +1,33 @@
+{
+  "name": "orgportal-mysql-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OrgPortal API backed by MySQL",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "worker": "node src/worker.js",
+    "db:migrate": "node database/migrate.js up",
+    "db:migrate:status": "node database/migrate.js status",
+    "db:reset": "node database/migrate.js reset",
+    "db:seed": "node database/seeds/demo.js",
+    "job:report": "node src/jobs/run.js registration-report",
+    "job:migrate-users": "node src/jobs/run.js migrate-users",
+    "job:cleanup-sessions": "node src/jobs/run.js cleanup-sessions"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "mysql2": "^3.14.0",
+    "node-cron": "^4.2.1",
+    "zod": "^4.1.0"
+  }
+}

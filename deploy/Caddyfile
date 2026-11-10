@@ -1,0 +1,14 @@
+# Caddy gets and renews a Let's Encrypt certificate for {$DOMAIN} automatically
+# (DNS must point to this server and ports 80 + 443 must be open). HTTP is redirected to HTTPS.
+{$DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+
+	# Only the Next.js app is public. It proxies /api/mysql/* and /api/supabase/* internally;
+	# the Express APIs and their /internal routes are never reachable from the internet.
+	reverse_proxy frontend:3000
+}

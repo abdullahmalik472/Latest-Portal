@@ -1,0 +1,118 @@
+# OrgPortal production stack.
+#   docker compose up -d --build
+# Only Caddy publishes ports (80/443). Everything else lives on the private "internal" network.
+#
+# Secrets come from (all git-ignored, created on the server):
+#   ./.env                      DOMAIN, MYSQL_ROOT_PASSWORD, MYSQL_PASSWORD   (see .env.example)
+#   backend/mysql-app/.env      ADMIN_SIGNUP_CODE, MIGRATION_TOKEN, ...
+#   backend/supabase-app/.env   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_DB_URL, ...
+# Values under `environment:` below override the app .env files (container networking).
+
+x-mysql-app: &mysql-app
+  build: ./backend/mysql-app
+  image: orgportal/mysql-app
+  restart: unless-stopped
+  env_file: ./backend/mysql-app/.env
+  environment:
+    NODE_ENV: production
+    HOST: 0.0.0.0
+    PORT: "4001"
+    TRUST_PROXY: loopback, uniquelocal
+    ALLOWED_ORIGINS: https://${DOMAIN:?set DOMAIN in .env}
+    MYSQL_HOST: mysql
+    MYSQL_PORT: "3306"
+    MYSQL_USER: orgportal
+    MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}
+    MYSQL_DATABASE: orgportal
+    SUPABASE_APP_URL: http://supabase-app:4002
+  depends_on:
+    mysql:
+      condition: service_healthy
+  networks: [internal]
+
+x-supabase-app: &supabase-app
+  build: ./backend/supabase-app
+  image: orgportal/supabase-app
+  restart: unless-stopped
+  env_file: ./backend/supabase-app/.env
+  environment:
+    NODE_ENV: production
+    HOST: 0.0.0.0
+    PORT: "4002"
+    TRUST_PROXY: loopback, uniquelocal
+    ALLOWED_ORIGINS: https://${DOMAIN:?set DOMAIN in .env}
+  networks: [internal]
+
+services:
+  caddy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      frontend:
+        condition: service_healthy
+    networks: [internal]
+
+  frontend:
+    build: ./frontend
+    image: orgportal/frontend
+    restart: unless-stopped
+    depends_on:
+      mysql-app:
+        condition: service_healthy
+      supabase-app:
+        condition: service_healthy
+    networks: [internal]
+
+  mysql-app:
+    <<: *mysql-app
+
+  mysql-worker:
+    <<: *mysql-app
+    command: ["node", "src/worker.js"]
+    healthcheck:
+      disable: true
+
+  supabase-app:
+    <<: *supabase-app
+
+  supabase-worker:
+    <<: *supabase-app
+    command: ["node", "src/worker.js"]
+    healthcheck:
+      disable: true
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: orgportal
+      MYSQL_USER: orgportal
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks: [internal]
+
+networks:
+  internal:
+
+volumes:
+  mysql_data:
+  caddy_data:
+  caddy_config:
