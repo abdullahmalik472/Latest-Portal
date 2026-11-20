@@ -36,6 +36,17 @@ src/
 
 ## Quick start
 
+### 0. Git hooks (once per clone)
+
+```bash
+npm install                   # in the project root: installs Husky and activates the hooks
+```
+
+Every commit then runs two checks automatically, and is blocked if either fails:
+
+- **pre-commit:** `npm --prefix backend/mysql-app run check` (TypeScript type-check + every relative import points to an existing file).
+- **commit-msg:** the message must follow [Conventional Commits](https://www.conventionalcommits.org), e.g. `feat(mysql-app): add attendance module`.
+
 ### 1. MySQL backend
 
 ```bash

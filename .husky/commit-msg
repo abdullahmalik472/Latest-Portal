@@ -1,0 +1,2 @@
+# Checks the commit message format: type(scope): description  (Conventional Commits)
+npx --no -- commitlint --edit "$1"
