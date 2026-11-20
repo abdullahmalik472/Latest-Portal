@@ -1,5 +1,6 @@
 node_modules
 .next
+*.tar
 
 # secrets: only the *.example files are committed
 .env

@@ -172,6 +172,8 @@ To enable it:
 
 ## Deploy with Docker (AWS EC2)
 
+> The live server (AWS Lightsail, behind nginx) and the step-by-step update process are documented in [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ```
 Internet ──80/443──▶ caddy (auto HTTPS) ──▶ frontend ──▶ mysql-app ──▶ mysql (volume)
                                                      └──▶ supabase-app ──▶ Supabase
