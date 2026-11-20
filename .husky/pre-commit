@@ -1,3 +1,3 @@
 # Runs before every commit. If any command fails, the commit is blocked.
-# 1) TypeScript type-check  2) every relative import points to a file that exists
+# 1) lint (Oxlint)  2) TypeScript type-check  3) every relative import points to a file that exists
 npm --prefix backend/mysql-app run check --silent

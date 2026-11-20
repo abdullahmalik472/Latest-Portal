@@ -11,7 +11,8 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "typecheck": "tsc",
-    "check": "npm run typecheck && node scripts/check-imports.ts",
+    "lint": "oxlint -c .oxlintrc.json --deny-warnings src database scripts",
+    "check": "npm run lint && npm run typecheck && node scripts/check-imports.ts",
     "worker": "node src/worker.js",
     "db:migrate": "node database/migrate.js up",
     "db:migrate:status": "node database/migrate.js status",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.6",
+    "oxlint": "^1.94.0",
     "typescript": "^7.0.2"
   }
 }

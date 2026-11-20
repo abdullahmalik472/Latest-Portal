@@ -83,7 +83,7 @@ async function up(conn) {
     try {
       await conn.query(f.sql);
     } catch (err) {
-      throw new Error(`Migration ${f.version} failed: ${err.message}`);
+      throw new Error(`Migration ${f.version} failed: ${err.message}`, { cause: err });
     }
     const ms = Date.now() - t0;
     await conn.execute("INSERT INTO schema_migrations (version, checksum, applied_at, execution_ms) VALUES (?, ?, ?, ?)", [
