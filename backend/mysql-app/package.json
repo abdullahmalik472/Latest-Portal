@@ -11,6 +11,7 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "typecheck": "tsc",
+    "check": "npm run typecheck && node scripts/check-imports.ts",
     "worker": "node src/worker.js",
     "db:migrate": "node database/migrate.js up",
     "db:migrate:status": "node database/migrate.js status",
