@@ -93,7 +93,7 @@ async function up(client) {
       await client.query("commit");
     } catch (err) {
       await client.query("rollback").catch(() => {});
-      throw new Error(`Migration ${f.version} failed and was rolled back: ${err.message}`);
+      throw new Error(`Migration ${f.version} failed and was rolled back: ${err.message}`, { cause: err });
     }
     console.log(`  applied ${f.version} (${Date.now() - t0} ms)`);
   }
