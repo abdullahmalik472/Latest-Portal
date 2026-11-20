@@ -1,6 +1,6 @@
 import { pool } from "../db/pool.js";
 import { conflict } from "../utils/errors.js";
-import { toPublicUser } from "./mappers.js";
+import { toPublicUser } from "./mappers.ts";
 
 export async function list() {
   const [rows] = await pool.execute("SELECT id, name FROM orgs ORDER BY name");

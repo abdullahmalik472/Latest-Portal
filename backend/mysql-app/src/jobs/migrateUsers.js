@@ -11,7 +11,7 @@
 import { env } from "../config/env.js";
 import { pool } from "../db/pool.js";
 import * as migrationRuns from "../repositories/userMigrationRuns.js";
-import * as users from "../repositories/users.js";
+import * as users from "../repositories/users.ts";
 import { log } from "../utils/log.js";
 
 const LOCK = "orgportal_user_migration";

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { env } from "../config/env.js";
 import { authenticate, requireRole } from "../middleware/auth.js";
 import * as migrationRuns from "../repositories/userMigrationRuns.js";
-import * as users from "../repositories/users.js";
+import * as users from "../repositories/users.ts";
 
 // Admin-only, read-only view of the MySQL -> Supabase migration progress.
 const router = Router();

@@ -1,5 +1,5 @@
 import { pool } from "../db/pool.js";
-import { toPublicUser } from "./mappers.js";
+import { toPublicUser } from "./mappers.ts";
 
 export async function insert({ id, userId, tokenHash, createdAt, expiresAt, ip, userAgent }) {
   await pool.execute(
