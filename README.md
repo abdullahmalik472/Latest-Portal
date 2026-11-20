@@ -113,6 +113,16 @@ Rules:
 - **Concurrency.** Two people or servers migrating at the same time are serialised with a lock (`GET_LOCK` / `pg_advisory_lock`).
 - **Supabase without `SUPABASE_DB_URL`.** You can paste the migration files into the Supabase SQL editor in order, but then nothing tracks what was applied.
 
+### TypeScript (gradual migration)
+
+The backends are moving from JavaScript to TypeScript one file at a time. Node runs `.ts` files directly (no build step).
+
+- New files are written in TypeScript (`.ts`).
+- An existing `.js` file is converted when it is substantially changed.
+- `npm run typecheck` must pass before every commit (enforced by the pre-commit hook).
+- Only type syntax Node can strip is allowed: no `enum`, `namespace` or constructor parameter properties (`erasableSyntaxOnly`).
+- After renaming a `.js` file to `.ts`, update every import of it. Node needs the exact file name, and `typecheck` alone will not catch a stale import.
+
 ---
 
 ## API (identical in both backends)
