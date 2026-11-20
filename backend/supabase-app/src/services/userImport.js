@@ -1,7 +1,7 @@
 // Receiver side of the one-way MySQL -> Supabase user migration.
 import * as orgs from "../repositories/orgs.js";
-import * as users from "../repositories/users.js";
-import { isUniqueViolation } from "../db/supabase.js";
+import * as users from "../repositories/users.ts";
+import { isUniqueViolation } from "../db/supabase.ts";
 import { newRegNumber } from "../utils/crypto.js";
 import { log } from "../utils/log.js";
 
@@ -42,16 +42,17 @@ export async function importUsers(incoming) {
     try {
       (await users.insertIgnoringExisting([toRow(u)])).forEach((id) => inserted.add(id));
     } catch (err) {
+      let lastErr = err;
       if (isUniqueViolation(err, "users_reg_uq")) {
         // Registration number already taken in Supabase: keep the user, issue a new number.
         try {
           (await users.insertIgnoringExisting([toRow(u, newRegNumber(new Date(u.createdAt)))])).forEach((id) => inserted.add(id));
           continue;
         } catch (retryErr) {
-          err = retryErr;
+          lastErr = retryErr;
         }
       }
-      failed.push({ id: u.id, reason: err.code ? `db error ${err.code}` : "import failed" });
+      failed.push({ id: u.id, reason: lastErr.code ? `db error ${lastErr.code}` : "import failed" });
     }
   }
   return summarize(incoming, inserted, failed);

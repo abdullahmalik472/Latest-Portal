@@ -1,4 +1,4 @@
-import { countOf, sb } from "../db/supabase.js";
+import { countOf, sb } from "../db/supabase.ts";
 
 const head = (table) => sb.from(table).select("id", { count: "exact", head: true });
 

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-const ROLES = ["admin", "teacher", "student"];
+// "as const" keeps the exact strings, so z.enum (and the Role type below) knows the 3 values, not just "string".
+const ROLES = ["admin", "teacher", "student"] as const;
 
 const email = z
   .string({ error: "Email is required" })
@@ -18,7 +19,7 @@ const newPassword = z
 
 const name = z.string({ error: "Name is required" }).trim().min(1, "Name is required").max(120, "Name is too long");
 const role = z.enum(ROLES, { error: "Choose a valid role" });
-const id = (label) => z.uuid(`Choose a valid ${label}`);
+const id = (label: string) => z.uuid(`Choose a valid ${label}`);
 
 export const registerSchema = z.object({
   name,
@@ -55,3 +56,25 @@ export const listUsersQuery = z.object({
 export const listCoursesQuery = z.object({
   mine: z.enum(["1", "true"]).optional(),
 });
+
+// Query strings always arrive as text ("?snapshots=12"), so z.coerce turns them into numbers first.
+export const reportQuery = z.object({
+  snapshots: z.coerce
+    .number({ error: "snapshots must be a number" })
+    .int("snapshots must be a whole number")
+    .min(1, "snapshots must be at least 1")
+    .max(168, "snapshots can be at most 168 (one week of hourly snapshots)")
+    .default(24),
+});
+
+/* ---------- Types generated from the schemas: never written by hand ---------- */
+
+export type Role = z.infer<typeof role>;
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
+export type CreateUserInput = z.infer<typeof createUserSchema>;
+export type CreateCourseInput = z.infer<typeof createCourseSchema>;
+export type CreateOrgInput = z.infer<typeof createOrgSchema>;
+export type ListUsersQuery = z.infer<typeof listUsersQuery>;
+export type ListCoursesQuery = z.infer<typeof listCoursesQuery>;
+export type ReportQuery = z.infer<typeof reportQuery>;

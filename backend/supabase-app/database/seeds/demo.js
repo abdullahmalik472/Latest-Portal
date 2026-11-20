@@ -3,7 +3,7 @@
 // Safe to re-run: existing rows are kept.
 import bcrypt from "bcryptjs";
 import { env } from "../../src/config/env.js";
-import { must, sb } from "../../src/db/supabase.js";
+import { must, sb } from "../../src/db/supabase.ts";
 import { SEED_COURSES, SEED_ORGS, SEED_USERS, minutesAgo } from "./demo-data.js";
 
 if (env.isProd && !process.argv.includes("--force")) {

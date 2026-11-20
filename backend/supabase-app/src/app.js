@@ -2,7 +2,7 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import helmet from "helmet";
 import { DB_NAME, env } from "./config/env.js";
-import { sb } from "./db/supabase.js";
+import { sb } from "./db/supabase.ts";
 import { errorHandler, notFoundHandler } from "./middleware/error.js";
 import { apiLimiter, noStore, originGuard, requireJson } from "./middleware/security.js";
 import authRoutes from "./routes/auth.js";

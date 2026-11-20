@@ -2,9 +2,9 @@ import { Router } from "express";
 import { authenticate } from "../middleware/auth.js";
 import { loginLimiter, registerLimiter } from "../middleware/security.js";
 import { validate } from "../middleware/validate.js";
-import * as auth from "../services/auth.js";
+import * as auth from "../services/auth.ts";
 import { clearSessionCookie, readSessionCookie, setSessionCookie } from "../utils/cookies.js";
-import { loginSchema, registerSchema } from "../validation/schemas.js";
+import { loginSchema, registerSchema } from "../validation/schemas.ts";
 
 const router = Router();
 

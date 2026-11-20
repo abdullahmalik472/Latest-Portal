@@ -1,6 +1,6 @@
-import { isUniqueViolation, must, sb } from "../db/supabase.js";
+import { isUniqueViolation, must, sb } from "../db/supabase.ts";
 import { conflict } from "../utils/errors.js";
-import { toPublicUser } from "./mappers.js";
+import { toPublicUser } from "./mappers.ts";
 
 export async function list() {
   return must(await sb.from("orgs").select("id, name").order("name"));

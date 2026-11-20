@@ -1,6 +1,6 @@
-import { countOf, must, sb } from "../db/supabase.js";
+import { countOf, must, sb } from "../db/supabase.ts";
 import { WINDOWS, windowStart } from "../utils/windows.js";
-import { clampLimit } from "./mappers.js";
+import { clampLimit } from "./mappers.ts";
 
 const COUNT_KEYS = ["total_users", ...WINDOWS.map((w) => w.key)];
 const head = () => sb.from("users").select("id", { count: "exact", head: true });

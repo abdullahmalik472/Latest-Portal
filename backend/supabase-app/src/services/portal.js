@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
-import * as courses from "../repositories/courses.js";
+import * as courses from "../repositories/courses.ts";
 import * as orgs from "../repositories/orgs.js";
 import * as stats from "../repositories/stats.js";
-import * as users from "../repositories/users.js";
+import * as users from "../repositories/users.ts";
 import { badRequest } from "../utils/errors.js";
-import { createAccount } from "./auth.js";
+import { createAccount } from "./auth.ts";
 
 const isAdmin = (user) => user.role === "admin";
 

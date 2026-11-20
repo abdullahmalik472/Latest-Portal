@@ -1,5 +1,5 @@
-import { must, sb } from "../db/supabase.js";
-import { USER_COLS, toPublicUser } from "./mappers.js";
+import { must, sb } from "../db/supabase.ts";
+import { USER_COLS, toPublicUser } from "./mappers.ts";
 
 export async function insert({ id, userId, tokenHash, createdAt, expiresAt, ip, userAgent }) {
   must(

@@ -2,8 +2,8 @@ import { Router } from "express";
 import { authenticate, requireRole } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 import * as portal from "../services/portal.js";
-import { registrationReport } from "../services/reports.js";
-import { createCourseSchema, createOrgSchema, createUserSchema, listCoursesQuery, listUsersQuery } from "../validation/schemas.js";
+import { registrationReport } from "../services/reports.ts";
+import { createCourseSchema, createOrgSchema, createUserSchema, listCoursesQuery, listUsersQuery, reportQuery } from "../validation/schemas.ts";
 
 const router = Router();
 const admin = requireRole("admin");
@@ -38,6 +38,8 @@ router.post("/users", admin, validate(createUserSchema), async (req, res) => {
   res.status(201).json({ user: await portal.createUser(req.valid.body) });
 });
 
-router.get("/reports/registrations", admin, async (_req, res) => res.json(await registrationReport()));
+router.get("/reports/registrations", admin, validate(reportQuery, "query"), async (req, res) => {
+  res.json(await registrationReport(req.valid.query));
+});
 
 export default router;
