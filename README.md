@@ -44,7 +44,7 @@ npm install                   # in the project root: installs Husky and activate
 
 Every commit then runs two checks automatically, and is blocked if either fails:
 
-- **pre-commit:** `npm --prefix backend/mysql-app run check`: lint ([Oxlint](https://oxc.rs), config in `.oxlintrc.json`) + TypeScript type-check + every relative import points to an existing file.
+- **pre-commit:** `npm --prefix backend/<app> run check` for both backends: lint ([Oxlint](https://oxc.rs), config in `.oxlintrc.json`) + TypeScript type-check + every relative import points to an existing file.
 - **commit-msg:** the message must follow [Conventional Commits](https://www.conventionalcommits.org), e.g. `feat(mysql-app): add attendance module`.
 
 ### 1. MySQL backend
