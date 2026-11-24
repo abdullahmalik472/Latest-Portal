@@ -8,10 +8,19 @@
 #   backend/supabase-app/.env   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_DB_URL, ...
 # Values under `environment:` below override the app .env files (container networking).
 
+# Docker keeps container logs forever by default. Cap each service at 3 files x 10 MB (oldest is deleted).
+# Read them with: docker compose logs -f <service>
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 x-mysql-app: &mysql-app
   build: ./backend/mysql-app
   image: orgportal/mysql-app
   restart: unless-stopped
+  logging: *logging
   env_file: ./backend/mysql-app/.env
   environment:
     NODE_ENV: production
@@ -34,6 +43,7 @@ x-supabase-app: &supabase-app
   build: ./backend/supabase-app
   image: orgportal/supabase-app
   restart: unless-stopped
+  logging: *logging
   env_file: ./backend/supabase-app/.env
   environment:
     NODE_ENV: production
@@ -47,6 +57,7 @@ services:
   caddy:
     image: caddy:2.8-alpine
     restart: unless-stopped
+    logging: *logging
     ports:
       - "80:80"
       - "443:443"
@@ -66,6 +77,7 @@ services:
     build: ./frontend
     image: orgportal/frontend
     restart: unless-stopped
+    logging: *logging
     depends_on:
       mysql-app:
         condition: service_healthy
@@ -94,6 +106,7 @@ services:
   mysql:
     image: mysql:8.4
     restart: unless-stopped
+    logging: *logging
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
       MYSQL_DATABASE: orgportal
