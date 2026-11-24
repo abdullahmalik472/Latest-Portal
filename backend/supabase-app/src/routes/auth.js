@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/auth.js";
-import { loginLimiter, registerLimiter } from "../middleware/security.js";
+import { accountLoginLimiter, loginLimiter, registerLimiter } from "../middleware/security.js";
 import { validate } from "../middleware/validate.js";
 import * as auth from "../services/auth.ts";
 import { clearSessionCookie, readSessionCookie, setSessionCookie } from "../utils/cookies.js";
@@ -20,7 +20,7 @@ router.post("/register", registerLimiter, validate(registerSchema), async (req, 
   respondWithSession(res, 201, await auth.register(req.valid.body, meta(req)));
 });
 
-router.post("/login", loginLimiter, validate(loginSchema), async (req, res) => {
+router.post("/login", loginLimiter, validate(loginSchema), accountLoginLimiter, async (req, res) => {
   // A fresh token on every login (no session fixation). Drop any previous session for this browser.
   await auth.logout(readSessionCookie(req));
   respondWithSession(res, 200, await auth.login(req.valid.body, meta(req)));

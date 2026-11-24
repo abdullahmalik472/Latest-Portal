@@ -49,6 +49,23 @@ export const loginLimiter = rateLimit({
   message: limited("Too many failed sign-in attempts. Try again in 15 minutes."),
 });
 
+/**
+ * Failed logins per account: 5 per 15 min per email, whatever IP they come from. This stops a botnet
+ * spreading guesses for one victim across many IPs (credential stuffing). Must run after validate(),
+ * so the email is already trimmed and lower-cased. Unknown emails are limited the same way, so the
+ * response does not reveal whether an account exists.
+ * Trade-off: an attacker can lock a real user out for 15 min, so keep this window short.
+ */
+export const accountLoginLimiter = rateLimit({
+  windowMs: 15 * 60_000,
+  limit: 5,
+  skipSuccessfulRequests: true,
+  keyGenerator: (req) => `login:${req.valid.body.email}`,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: limited("Too many failed sign-in attempts for this account. Try again in 15 minutes."),
+});
+
 /** Registrations (and the password-reuse check they perform): 10 per hour per IP. */
 export const registerLimiter = rateLimit({
   windowMs: 60 * 60_000,
