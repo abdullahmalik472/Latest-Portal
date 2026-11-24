@@ -7,6 +7,6 @@ export async function runRegistrationReport() {
   const generatedAt = new Date();
   const counts = await reports.windowCounts(generatedAt);
   await reports.insertSnapshot({ generatedAt, counts });
-  log.info("registration report", { db: DB_NAME, ...counts });
+  log.info({ db: DB_NAME, ...counts }, "registration report");
   return counts;
 }

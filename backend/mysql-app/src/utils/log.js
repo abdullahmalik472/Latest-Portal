@@ -1,10 +1,30 @@
-// Minimal structured logger. Never pass request bodies here (they can contain passwords).
-const line = (level, msg, meta) =>
-  JSON.stringify({ t: new Date().toISOString(), level, msg, ...(meta && { ...meta }) });
+import pino from "pino";
+import { DB_NAME, env } from "../config/env.js";
 
-export const log = {
-  info: (msg, meta) => console.log(line("info", msg, meta)),
-  warn: (msg, meta) => console.warn(line("warn", msg, meta)),
-  error: (msg, err, meta) =>
-    console.error(line("error", msg, { ...meta, error: err?.message, stack: err?.stack?.split("\n").slice(0, 5).join(" | ") })),
-};
+/**
+ * The app-wide pino logger. Call shape: log.info({ ...fields }, "message").
+ * Pass errors as { err } so pino serializes type, message and stack.
+ *
+ * Inside a request handler prefer req.log (set by middleware/requestLog.js): it is a child of this
+ * logger that stamps every line with the request id.
+ */
+export const log = pino({
+  level: env.LOG_LEVEL,
+  base: { app: `${DB_NAME}-app` },
+  // Safety net: if any of these ever end up in a log line, the value is replaced before it is written.
+  redact: {
+    paths: [
+      "req.headers.cookie",
+      "req.headers.authorization",
+      'res.headers["set-cookie"]',
+      "*.password",
+      "*.passwordHash",
+      "*.adminCode",
+      "*.token",
+    ],
+    censor: "[Redacted]",
+  },
+  timestamp: pino.stdTimeFunctions.isoTime,
+  // Production: raw JSON lines on stdout for the log collector. Dev: pretty, coloured output.
+  ...(env.LOG_PRETTY && { transport: { target: "pino-pretty", options: { translateTime: "SYS:HH:MM:ss", ignore: "pid,hostname" } } }),
+});

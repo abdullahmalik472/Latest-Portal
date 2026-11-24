@@ -4,6 +4,7 @@ import helmet from "helmet";
 import { DB_NAME, env } from "./config/env.js";
 import { sb } from "./db/supabase.ts";
 import { errorHandler, notFoundHandler } from "./middleware/error.js";
+import { requestLog } from "./middleware/requestLog.js";
 import { apiLimiter, noStore, originGuard, requireJson } from "./middleware/security.js";
 import authRoutes from "./routes/auth.js";
 import internalRoutes from "./routes/internal.js";
@@ -15,6 +16,7 @@ export function createApp() {
   app.set("trust proxy", env.TRUST_PROXY);
 
   app.use(helmet());
+  app.use(requestLog);
   // No CORS headers on purpose: the browser reaches this API only through the same-origin Next.js proxy.
 
   app.get("/health", async (_req, res) => {

@@ -69,7 +69,7 @@ export async function runUserMigration() {
         await users.markMigrationFailed(result.failed);
         migrated += done.length;
         failed += result.failed.length;
-        log.info("user migration batch", { imported: result.imported.length, alreadyPresent: result.alreadyPresent.length, failed: result.failed.length });
+        log.info({ imported: result.imported.length, alreadyPresent: result.alreadyPresent.length, failed: result.failed.length }, "user migration batch");
 
         if (!done.length) break; // whole batch failed: stop, retry on the next run
       }
@@ -78,7 +78,7 @@ export async function runUserMigration() {
       throw err;
     } finally {
       await migrationRuns.finishMigrationRun(runId, { at: new Date(), migrated, failed, error });
-      log.info("user migration finished", { migrated, failed, error });
+      log.info({ migrated, failed, error }, "user migration finished");
     }
     return { migrated, failed };
   } finally {

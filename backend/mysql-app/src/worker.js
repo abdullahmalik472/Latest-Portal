@@ -18,13 +18,13 @@ function schedule(name, expression, job) {
       try {
         await job();
       } catch (err) {
-        log.error(`job ${name} failed`, err);
+        log.error({ err, job: name }, "job failed");
       }
     },
     { name, timezone: env.CRON_TIMEZONE, noOverlap: true },
   );
   tasks.push(task);
-  log.info("job scheduled", { name, expression, timezone: env.CRON_TIMEZONE });
+  log.info({ name, expression, timezone: env.CRON_TIMEZONE }, "job scheduled");
 }
 
 schedule("registration-report", env.REPORT_CRON, runRegistrationReport);
@@ -35,7 +35,7 @@ else log.info("user migration disabled (MIGRATION_ENABLED=false)");
 log.info(`${DB_NAME} worker started`);
 
 async function shutdown(signal) {
-  log.info("worker shutting down", { signal });
+  log.info({ signal }, "worker shutting down");
   for (const t of tasks) t.stop();
   await pool.end().catch(() => {});
   process.exit(0);

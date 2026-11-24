@@ -19,7 +19,7 @@ export async function authenticate(req, res, next) {
   }
 
   if (now - found.session.lastSeenAt > TOUCH_EVERY_MS) {
-    sessions.touch(found.session.id, now).catch((err) => log.warn("session touch failed", { error: err.message }));
+    sessions.touch(found.session.id, now).catch((err) => log.warn({ err }, "session touch failed"));
   }
   req.auth = found;
   next();
