@@ -20,6 +20,9 @@ const schema = z
     PORT: z.coerce.number().int().positive().default(4001),
     ALLOWED_ORIGINS: list("http://localhost:3000"),
     TRUST_PROXY: z.string().default("loopback").transform(parseTrustProxy),
+    LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]).default("info"),
+    // Human-readable coloured logs (needs the pino-pretty dev dependency). Defaults to true outside production.
+    LOG_PRETTY: optional(z.enum(["true", "false"])),
 
     MYSQL_HOST: z.string().default("127.0.0.1"),
     MYSQL_PORT: z.coerce.number().int().positive().default(3306),
@@ -62,6 +65,7 @@ export const env = Object.freeze({
   ...e,
   isProd: e.NODE_ENV === "production",
   COOKIE_SECURE: e.COOKIE_SECURE ? e.COOKIE_SECURE === "true" : e.NODE_ENV === "production",
+  LOG_PRETTY: e.LOG_PRETTY ? e.LOG_PRETTY === "true" : e.NODE_ENV !== "production",
 });
 
 export const DB_NAME = "mysql";

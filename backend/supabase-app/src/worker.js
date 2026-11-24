@@ -16,13 +16,13 @@ function schedule(name, expression, job) {
       try {
         await job();
       } catch (err) {
-        log.error(`job ${name} failed`, err);
+        log.error({ err, job: name }, "job failed");
       }
     },
     { name, timezone: env.CRON_TIMEZONE, noOverlap: true },
   );
   tasks.push(task);
-  log.info("job scheduled", { name, expression, timezone: env.CRON_TIMEZONE });
+  log.info({ name, expression, timezone: env.CRON_TIMEZONE }, "job scheduled");
 }
 
 schedule("registration-report", env.REPORT_CRON, runRegistrationReport);
@@ -31,7 +31,7 @@ schedule("session-cleanup", env.SESSION_CLEANUP_CRON, runSessionCleanup);
 log.info(`${DB_NAME} worker started`);
 
 function shutdown(signal) {
-  log.info("worker shutting down", { signal });
+  log.info({ signal }, "worker shutting down");
   for (const t of tasks) t.stop();
   process.exit(0);
 }

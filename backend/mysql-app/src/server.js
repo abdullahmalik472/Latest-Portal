@@ -4,11 +4,11 @@ import { pool } from "./db/pool.js";
 import { log } from "./utils/log.js";
 
 const server = createApp().listen(env.PORT, env.HOST, () => {
-  log.info(`${DB_NAME}-app listening`, { url: `http://${env.HOST}:${env.PORT}`, env: env.NODE_ENV });
+  log.info({ url: `http://${env.HOST}:${env.PORT}`, env: env.NODE_ENV }, `${DB_NAME}-app listening`);
 });
 
 function shutdown(signal) {
-  log.info("shutting down", { signal });
+  log.info({ signal }, "shutting down");
   server.close(async () => {
     await pool.end().catch(() => {});
     process.exit(0);

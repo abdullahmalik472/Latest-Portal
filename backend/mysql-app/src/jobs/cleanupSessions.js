@@ -3,6 +3,6 @@ import { log } from "../utils/log.js";
 
 export async function runSessionCleanup() {
   const deleted = await sessions.deleteExpired(new Date());
-  log.info("expired sessions removed", { deleted });
+  log.info({ deleted }, "expired sessions removed");
   return { deleted };
 }

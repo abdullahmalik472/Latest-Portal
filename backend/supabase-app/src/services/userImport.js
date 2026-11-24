@@ -32,7 +32,7 @@ export async function importUsers(incoming) {
     const inserted = new Set(await users.insertIgnoringExisting(incoming.map((u) => toRow(u))));
     return summarize(incoming, inserted, []);
   } catch (err) {
-    log.warn("bulk import failed, retrying row by row", { error: err.message });
+    log.warn({ err }, "bulk import failed, retrying row by row");
   }
 
   // Slow path: isolate the bad rows instead of failing the whole batch.
